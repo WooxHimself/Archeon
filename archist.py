@@ -176,6 +176,7 @@ else:
     desktoptoinstall = "vim"
 
 if installtype == "2":
+    typepackages = "base-devel nano vim git neofetch sudo firefox"
     if desktop == '1':
         desktoptoinstall = "xorg xorg-server plasma-desktop kde-applications sddm"
     elif desktop == '2':
@@ -190,10 +191,10 @@ if installtype == "2":
         desktoptoinstall = "xorg xorg-server lxqt sddm"
     elif desktop == '7':
         desktoptoinstall = "xorg xorg-server openbox lightdm"
-    typepackages = "base-devel nano vim git neofetch sudo firefox"
 
 elif installtype == "3":
-    elif desktop == '1':
+    typepackages = "base-devel nano vim git neofetch sudo discord lutris steam firefox"
+    if desktop == '1':
         desktoptoinstall = "xorg xorg-server plasma-desktop kde-applications sddm steam discord lutris wine winetricks"
     elif desktop == '2':
         desktoptoinstall = "xorg xorg-server xfce xfce4-goodies lightdm steam discord lutris wine winetricks"
@@ -209,7 +210,6 @@ elif installtype == "3":
         desktoptoinstall = "xorg xorg-server openbox lightdm steam discord lutris wine winetricks"
 
 
-    typepackages = "base-devel nano vim git neofetch sudo discord lutris steam firefox"
 
 print(f"""Please confirm all informations below are correct:
 
@@ -281,10 +281,11 @@ if allcorrect == 'y' or allcorrect == 'Y':
     print("INSTALLING BASE SYSTEM")
     print("=====================")
 
-    os.system(f"pacstrap --noconfirm /mnt base {krnl}")
+    os.system(f"pacstrap /mnt base {krnl}")
     print("")
     print("=====================")
     print(" INSTALLING PACKAGES")
     print("=====================")
     os.system(f"pacman -Sy --noconfirm {typepackages}")
     os.system(f"pacman -Sy --noconfirm {desktoptoinstall}")
+    os.system(f"pacman -Sy --noconfirm {gpupackages}")
