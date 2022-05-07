@@ -41,6 +41,7 @@ if "/dev/" not in driveselect:
 else:
     pass
 
+partition1 = f"{driveselect}1"
 partition2 = f"{driveselect}2"
 partition3 = f"{driveselect}3"
 
@@ -108,12 +109,45 @@ kernelselect = input("What kernel would you like to use? (1, 2, 3 or 4): ")
 
 if kernelselect == '1':
     kerneltype = 'Linux'
-if kernelselect == '2':
+elif kernelselect == '2':
     kerneltype = 'Hardened'
-if kernelselect == '3':
+elif kernelselect == '3':
     kerneltype = 'ZEN'
-if kernelselect == '4':
+elif kernelselect == '4':
     kerneltype = 'LTS'
+
+if kerneltype == 'Linux':
+    krnl = "linux linux-firmware"
+elif kerneltype == 'Hardened':
+    krnl = "linux-hardened linux-hardened-headers"
+elif kerneltype == 'ZEN':
+    krnl = "linux-zen linux-zen-headers"
+elif kerneltype == 'LTS':
+    krnl = "linux-lts"
+
+print("""
+
+[1] Nvidia
+[2] AMD
+[3] INTEL
+
+If you're using a VM, you can skip this step by pressing [ENTER]
+""")
+
+gpu = input("What is your GPU manufacturer? (1-3): ")
+
+if gpu == "1":
+    gputype = "NVidia"
+    gpupackages = "nvidia-dkms"
+elif gpu == "2":
+    gputype = "AMD"
+    gpupackages = "xf86-video-amdgpu"
+elif gpu == "3":
+    gputype = "INTEL"
+    gpupackages = "xf86-video-intel"
+elif gputype = "":
+    gputype = "VirtualMachine"
+    gpupackages = ""
 
 
 print("LAST QUESTION")
@@ -121,18 +155,16 @@ print("""
 
 [1] Minimal - Only required packages will be installed, after installation you will boot into tty console | Installation will take ~5 minutes
 [2] Classic - Some packages will be installed like desktop, web browser, text editor and other every-day use apps | Installation will take ~10-15 minutes
-[3] Gamer - All packages from Classic & Minimal installation will be installed along with applications for Gaming like Steam, Lutris, Discord etc. | Installation will take ~15-20 minutes
-[4] ALL-IN-ONE - Everything from all of the 3 types will be here, along with some other apps | Installation will take ~30-45 minutes
+[3] Ultimate - Everything from both types will be here, along with other apps | Installation will take ~30-45 minutes
 
 """)
 installtype = input("What type of installation do you require? (1, 2 or 3): ")
-if installtype == '2' or installtype == '3' or installtype == '4':
+if installtype == '2' or installtype == '3':
     print("""
 
 [1] KDE Plasma - Great choice for users coming from Windows         <<<< RECOMMENDED
 [2] XFCE - Lightweight Desktop good for both low-end and high-end hardware      <<<< RECOMMENDED
 [3] Cinnamon - Like XFCE, but with more functions not as lightweight
-[3] MATE - Really similiar to Cinnamon, but with less functions
 [4] i3 - Window Manager aimed for advanced users, not recommended for new Unix/Linux users
 [5] GNOME - Classic Desktop, similar to KDE Plasma      <<< RECOMMENDED
 [6] LxQt - Very lightweight Desktop, can be used with Window Managers.
@@ -142,6 +174,42 @@ if installtype == '2' or installtype == '3' or installtype == '4':
     desktop = input("What desktop/wm would you like to use? (1-7): ")
 else:
     pass
+
+if installtype == "2":
+    if desktop == '1':
+        desktoptoinstall = "xorg xorg-server plasma-desktop kde-applications sddm"
+    elif desktop == '2':
+        desktoptoinstall = "xorg xorg-server xfce xfce4-goodies lightdm"
+    elif desktop == '3':
+        desktoptoinstall = "xorg xorg-server cinnamon lightdm"
+    elif desktop == '4':
+        desktoptoinstall = "xorg xorg-server i3-gaps lightdm"
+    elif desktop == '5':
+        desktoptoinstall = "xorg xorg-server gnome gnome-tweaks gdm"
+    elif desktop == '6':
+        desktoptoinstall = "xorg xorg-server lxqt sddm"
+    elif desktop == '7':
+        desktoptoinstall = "xorg xorg-server openbox lightdm"
+    typepackages = "base-devel nano vim git neofetch sudo firefox"
+
+elif installtype == "3":
+    elif desktop == '1':
+        desktoptoinstall = "xorg xorg-server plasma-desktop kde-applications sddm steam discord lutris wine winetricks"
+    elif desktop == '2':
+        desktoptoinstall = "xorg xorg-server xfce xfce4-goodies lightdm steam discord lutris wine winetricks"
+    elif desktop == '3':
+        desktoptoinstall = "xorg xorg-server cinnamon lightdm steam discord lutris wine winetricks"
+    elif desktop == '4':
+        desktoptoinstall = "xorg xorg-server i3-gaps lightdm steam discord lutris wine winetricks"
+    elif desktop == '5':
+        desktoptoinstall = "xorg xorg-server gnome gnome-tweaks gdm steam discord lutris wine winetricks"
+    elif desktop == '6':
+        desktoptoinstall = "xorg xorg-server lxqt sddm steam discord lutris wine winetricks"
+    elif desktop == '7':
+        desktoptoinstall = "xorg xorg-server openbox lightdm steam discord lutris wine winetricks"
+
+
+    typepackages = "base-devel nano vim git neofetch sudo discord lutris steam firefox"
 
 print(f"""Please confirm all informations below are correct:
 
@@ -180,24 +248,40 @@ if allcorrect == 'y' or allcorrect == 'Y':
     print("Installation has begun, grab a cup of coffee, sit back and relax while the installation finishes")
     print("Any errors will be reported here.")
     print("Thanks for using Archeon!")
-    os.system(f"sgdisk -n 1::+1M --typecode=1:ef02 --change-name=1:'BIOS' {driveselect}")
-    os.system(f"sgdisk -n 2::+300M --typecode=2:ef00 --change-name=2:'EFI' {driveselect}")
+    os.system(f"sgdisk -n 1::+512M --typecode=1:ef02 --change-name=1:'BOOT' {driveselect}")
+    os.system(f"sgdisk -n 2::+2G --typecode=2:ef00 --change-name=2:'SWAP' {driveselect}")
     os.system(f"sgdisk -n 3::-0 --typecode=3:8300 --change-name=3:'ROOT' {driveselect}")
+    os.system(f"mkfs.fat -F32 {partition1}")
+    os.system(f"mkswap {partition2}")
+    os.system(f"swapon {partition2}")
+    os.system(f"mkfs.btrfs {partition3}")
+    os.system(f"mount {partition3} /mnt")
+
+    print("=====================")
+    print("CREATING SUBVOLUMES")
+    print("=====================")
     os.system("btrfs subvolume create /mnt/@")
     os.system("btrfs subvolume create /mnt/@home")
     os.system("btrfs subvolume create /mnt/@var")
+    os.system("btrfs subvolume create /mnt/@opt")
     os.system("btrfs subvolume create /mnt/@tmp")
     os.system("btrfs subvolume create /mnt/@.snapshots")
 
     os.system(f"umount /mnt")
-    os.system(f"mount -o ${mntopt},subvol=@ ${partition3} /mnt")
+    os.system(f"mount -o {mntopt},subvol=@ {partition3} /mnt")
     os.system("mkdir -p /mnt/{home,var,tmp,.snapshots}")
 
-    os.system(f"mount -o ${mntopt},subvol=@home ${partition3} /mnt/home")
-    os.system(f"mount -o ${mntopt},subvol=@tmp ${partition3} /mnt/tmp")
-    os.system(f"mount -o ${mntopt},subvol=@var ${partition3} /mnt/var")
-    os.system(f"mount -o ${mntopt},subvol=@.snapshots ${partition3} /mnt/.snapshots")
+    os.system(f"mount -o {mntopt},subvol=@home {partition3} /mnt/home")
+    os.system(f"mount -o {mntopt},subvol=@opt {partition3} /mnt/opt")
+    os.system(f"mount -o {mntopt},subvol=@tmp {partition3} /mnt/tmp")
+    os.system(f"mount -o {mntopt},subvol=@.snapshots {partition3} /mnt/.snapshots")
+    os.system(f"mount -o subvol=@var {partition3} /mnt/var")
+    print("=====================")
+    print("INSTALLING BASE SYSTEM")
+    print("=====================")
 
-    os.system(f"mkfs.vfat -F32 -n 'EFI' ${partition2}")
-    os.system(f"mkfs.btrfs -L ROOT ${partition3} -f")
-    os.system(f"mount -t btrfs ${partition3} /mnt")
+    os.system(f"pacstrap /mnt base {krnl}")
+    print("")
+    print("=====================")
+    print("")
+    print("=====================")
