@@ -145,7 +145,7 @@ elif gpu == "2":
 elif gpu == "3":
     gputype = "INTEL"
     gpupackages = "xf86-video-intel"
-elif gputype = "":
+elif gputype == "":
     gputype = "VirtualMachine"
     gpupackages = ""
 
@@ -173,7 +173,7 @@ if installtype == '2' or installtype == '3':
     """)
     desktop = input("What desktop/wm would you like to use? (1-7): ")
 else:
-    pass
+    desktoptoinstall = "vim"
 
 if installtype == "2":
     if desktop == '1':
@@ -218,6 +218,7 @@ Hostname: {hostnameprompt}
 Selected Drive: {driveselect}
 Drive Filesystem: btrfs
 Drive Encryption: {encryptstate}
+GPU: {gputype}
 Kernel: {kerneltype}
 Keymap: {keymap}
 Timezone: {timezone}
@@ -280,8 +281,10 @@ if allcorrect == 'y' or allcorrect == 'Y':
     print("INSTALLING BASE SYSTEM")
     print("=====================")
 
-    os.system(f"pacstrap /mnt base {krnl}")
+    os.system(f"pacstrap --noconfirm /mnt base {krnl}")
     print("")
     print("=====================")
-    print("")
+    print(" INSTALLING PACKAGES")
     print("=====================")
+    os.system(f"pacman -Sy --noconfirm {typepackages}")
+    os.system(f"pacman -Sy --noconfirm {desktoptoinstall}")
