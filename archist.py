@@ -286,6 +286,5 @@ if allcorrect == 'y' or allcorrect == 'Y':
     print("=====================")
     print(" INSTALLING PACKAGES")
     print("=====================")
-    os.system(f"pacman -Sy --noconfirm {typepackages}")
-    os.system(f"pacman -Sy --noconfirm {desktoptoinstall}")
-    os.system(f"pacman -Sy --noconfirm {gpupackages}")
+    os.system(f"arch-chroot /mnt pacman -Sy --noconfirm {typepackages} && pacman -Sy --noconfirm {desktoptoinstall} && pacman -Sy --noconfirm {gpupackages} && exit")
+    print("All done!")
